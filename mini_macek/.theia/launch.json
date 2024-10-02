@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "CCS Debug",
+            "type": "ccs-debug",
+            "request": "launch"
+        },
+        {
+            "name": "mini_macek",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "mini_macek",
+                "resourceId": "/mini_macek"
+            }
+        },
+        {
+            "name": "mini_macek (1)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "mini_macek",
+                "resourceId": "/mini_macek/src/drivers/ADG726"
+            }
+        }
+    ]
+}
