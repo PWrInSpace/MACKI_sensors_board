@@ -20,8 +20,8 @@ const ProjectConfig = scripting.addModule("/ti/project_config/ProjectConfig");
  */
 GPIO1.port                          = "PORTA";
 GPIO1.portSegment                   = "Lower";
-GPIO1.$name                         = "GPIO";
-GPIO1.associatedPins[0].$name       = "LED";
+GPIO1.$name                         = "GPIO_LED";
+GPIO1.associatedPins[0].$name       = "STATUS";
 GPIO1.associatedPins[0].pin.$assign = "PA14";
 
 const Board = scripting.addModule("/ti/driverlib/Board", {}, false);

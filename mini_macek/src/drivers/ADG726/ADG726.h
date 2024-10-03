@@ -1,5 +1,9 @@
+#ifndef ADG726_H_
+#define ADG726_H_
+
 #include <stdbool.h>
 #include <stdint.h>
+
 
 #define NB_ADDRESS_PINS 4
 
@@ -59,3 +63,5 @@ bool ADG726_init(ADG726_t *dev);
  * @return false invalid pointer to function or struct
  */
 bool ADG726_change_address(ADG726_t * dev, uint8_t input_pin);
+
+#endif

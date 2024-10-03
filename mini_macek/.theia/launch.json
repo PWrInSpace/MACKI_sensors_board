@@ -23,6 +23,15 @@
                 "name": "mini_macek",
                 "resourceId": "/mini_macek/src/drivers/ADG726"
             }
+        },
+        {
+            "name": "mini_macek (2)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "mini_macek",
+                "resourceId": "/mini_macek/src/hw_wrappers/gpio.c"
+            }
         }
     ]
 }

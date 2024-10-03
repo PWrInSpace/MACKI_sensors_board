@@ -35,39 +35,30 @@
 #include "ti/driverlib/m0p/dl_core.h"
 #include "ti_msp_dl_config.h"
 #include "src/drivers/ADG726/ADG726.h"
+#include "src/hw_wrappers/gpio.h"
 
 #define DELAY (16000000)
-
-void set_gpio_pin(ADG726_gpio_pin_t pin, ADG726_gpio_state_t state) {
-    if (state == ADG726_HIGH) {
-        DL_GPIO_setPins(GPIO_MUX_PORT, pin);
-    } else {
-        DL_GPIO_clearPins(GPIO_MUX_PORT, pin);
-    }
-}
 
 
 int main(void) {
     SYSCFG_DL_init();
-    SYSCFG_DL_GPIO_init();
+    SYSCFG_DL_GPIO_init();  // IDK, should I move this to hw_wrappers/gpio.c?
 
-    DL_GPIO_setPins(GPIO_PORT, GPIO_LED_PIN);
+    GPIO_set_status_led_pin(STATUS_LED_ON);
 
     ADG726_t mux = {
-        ._set_gpio_pin = set_gpio_pin,
+        ._set_gpio_pin = GPIO_set_mux_pin,
         .address_pins = {GPIO_MUX_A0_PIN, GPIO_MUX_A1_PIN, GPIO_MUX_A2_PIN, GPIO_MUX_A3_PIN},
         .cs_pin = GPIO_MUX_nCS_PIN,
         .wr_pin = GPIO_MUX_nWR_PIN
     };
-    
-    int i = 0;
 
+    int i = 0;
     ADG726_init(&mux);
 
     while (1) {
         i++;
         ADG726_change_address(&mux, (i % 2) + 1);
-        DL_GPIO_togglePins(GPIO_PORT, GPIO_LED_PIN);
         delay_cycles(DELAY);
     }
 }
