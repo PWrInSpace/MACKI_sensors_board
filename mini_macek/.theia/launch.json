@@ -32,6 +32,42 @@
                 "name": "mini_macek",
                 "resourceId": "/mini_macek/src/hw_wrappers/gpio.c"
             }
+        },
+        {
+            "name": "mini_macek (3)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "mini_macek",
+                "resourceId": "/mini_macek/mspm0l1306.syscfg"
+            }
+        },
+        {
+            "name": "mini_macek (4)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "mini_macek",
+                "resourceId": "/mini_macek/main.c"
+            }
+        },
+        {
+            "name": "mini_macek (5)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "mini_macek",
+                "resourceId": "/mini_macek/src/hw_wrappers/spi.h"
+            }
+        },
+        {
+            "name": "mini_macek (6)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "mini_macek",
+                "resourceId": "/mini_macek/src/hw_wrappers"
+            }
         }
     ]
 }

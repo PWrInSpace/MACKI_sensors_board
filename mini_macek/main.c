@@ -32,20 +32,21 @@
 
 #include "ti/driverlib/dl_comp.h"
 #include "ti/driverlib/dl_gpio.h"
+#include "ti/driverlib/dl_uart_extend.h"
 #include "ti/driverlib/m0p/dl_core.h"
 #include "ti_msp_dl_config.h"
 #include "src/drivers/ADG726/ADG726.h"
 #include "src/hw_wrappers/gpio.h"
 #include "src/hw_wrappers/spi.h"
+#include "src/app/logger_def.h"
 
 #define DELAY (16000000)
 
 
 int main(void) {
     SYSCFG_DL_init();
-    SYSCFG_DL_GPIO_init();  // IDK, should I move this to hw_wrappers/gpio.c?
-
     GPIO_set_status_led_pin(STATUS_LED_ON);
+    LOG_INIT()
 
     ADG726_t mux = {
         ._set_gpio_pin = GPIO_set_mux_pin,
@@ -58,11 +59,15 @@ int main(void) {
     ADG726_init(&mux);
     uint32_t data = 0;
     ADG726_change_address(&mux, 1);
+    SPI_amp_set_register(0x85, 0x07);
     while (1) {
         i++;
         SPI_amp_set_register(0x84, 0x01);
         SPI_amp_read_data(&data);
-        
+        // DL_UART_Extend_transmitData(UART_SERVICE_INST, 0x41);
+        LOG_INFO("Hello world %d !", 42);
+        LOG_WARN("TEST");
+        LOG_ERROR("TEST2");
         delay_cycles(DELAY);
     }
 }
