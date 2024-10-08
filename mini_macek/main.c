@@ -39,8 +39,9 @@
 #include "src/hw_wrappers/gpio.h"
 #include "src/hw_wrappers/spi.h"
 #include "src/app/logger_def.h"
+#include <inttypes.h>
 
-#define DELAY (16000000)
+#define DELAY (4000000)
 
 
 int main(void) {
@@ -55,19 +56,21 @@ int main(void) {
         .wr_pin = GPIO_MUX_nWR_PIN
     };
 
-    int i = 0;
     ADG726_init(&mux);
-    uint32_t data = 0;
+    uint32_t data1 = 0;
+    uint32_t data2 = 0;
     ADG726_change_address(&mux, 1);
     SPI_amp_set_register(0x85, 0x07);
     while (1) {
-        i++;
+        ADG726_change_address(&mux, 1);
         SPI_amp_set_register(0x84, 0x01);
-        SPI_amp_read_data(&data);
-        // DL_UART_Extend_transmitData(UART_SERVICE_INST, 0x41);
-        LOG_INFO("Hello world %d !", 42);
-        LOG_WARN("TEST");
-        LOG_ERROR("TEST2");
+        SPI_amp_read_data(&data1);
+
+        ADG726_change_address(&mux, 2);
+        SPI_amp_set_register(0x84, 0x01);
+        SPI_amp_read_data(&data2);
+
+        LOG_INFO("Amplifier value\tCH1: %"PRIu32"\tCH2: %"PRIu32 , data1, data2);
         delay_cycles(DELAY);
     }
 }
