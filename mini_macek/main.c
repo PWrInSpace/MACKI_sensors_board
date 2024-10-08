@@ -36,6 +36,7 @@
 #include "ti_msp_dl_config.h"
 #include "src/drivers/ADG726/ADG726.h"
 #include "src/hw_wrappers/gpio.h"
+#include "src/hw_wrappers/spi.h"
 
 #define DELAY (16000000)
 
@@ -55,10 +56,13 @@ int main(void) {
 
     int i = 0;
     ADG726_init(&mux);
-
+    uint32_t data = 0;
+    ADG726_change_address(&mux, 1);
     while (1) {
         i++;
-        ADG726_change_address(&mux, (i % 2) + 1);
+        SPI_amp_set_register(0x84, 0x01);
+        SPI_amp_read_data(&data);
+        
         delay_cycles(DELAY);
     }
 }
