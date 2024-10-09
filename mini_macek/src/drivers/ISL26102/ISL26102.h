@@ -18,6 +18,10 @@
 // Convert read register to write register form
 #define W_REG(read_reg) read_reg | 0x80
 
+/**
+ * @brief Output word rate of ISL26102
+ *
+ */
 typedef enum {
     ISL26102_DR_2_5 = 0x00,
     ISL26102_DR_5 = 0x01,
@@ -41,6 +45,10 @@ typedef enum {
     ISL26102_DR_4000 = 0x13
 } ISL26102_OWR_t;
 
+/**
+ * @brief Channel of ISL26102
+ *
+ */
 typedef enum {
     ISL26102_CHANNEL_1 = 0x00,
     ISL26102_CHANNEL_2 = 0x01,
@@ -48,6 +56,10 @@ typedef enum {
     ISL26102_TEMPERATURE_SENSOR = 0x03
 } ISL26102_channel_t;
 
+/**
+ * @brief PGA gain of ISL26102
+ *
+ */
 typedef enum {
     ISL26102_X1 = 0x00,
     ISL26102_X2 = 0x01,
@@ -59,6 +71,10 @@ typedef enum {
     ISL26102_X128 = 0x07
 } ISL26102_PGA_gain_t;
 
+/**
+ * @brief Conversion control of ISL26102
+ *
+ */
 typedef enum {
     ISL26102_STOP_CONVERSION = 0x00,
     ISL26102_SINGLE_CONVERSION = 0x01,
@@ -66,10 +82,29 @@ typedef enum {
     ISL26102_OFFSET_CALIBRATION = 0x04
 } ISL26102_conversion_control_t;
 
+/**
+ * @brief spi write function prototype
+ *
+ */
 typedef bool(*ISL26102_spi_write_reg)(uint8_t reg, uint8_t val);
+
+/**
+ * @brief spi read function prototype
+ *
+ */
 typedef bool(*ISL26102_spi_read_reg)(uint8_t reg, uint8_t *out_val);
+
+/**
+ * @brief spi read data function prototype, this should wait for the SDO ready signal
+ * and read 3 bytes of data from the amplifier
+ *
+ */
 typedef bool(*ISL26102_spi_read_data)(uint8_t data_buffer[3]);
 
+/**
+ * @brief ISL26102 device struct
+ *
+ */
 typedef struct {
     ISL26102_spi_write_reg write_reg;
     ISL26102_spi_read_reg read_reg;
