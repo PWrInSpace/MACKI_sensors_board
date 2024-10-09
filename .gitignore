@@ -1,4 +1,8 @@
 Debug/
+.theia/
+.settings/
+Debug/.clangd/
+targetConfigs/
 
 # Prerequisites
 *.d
