@@ -7,6 +7,7 @@
 static struct {
     logger_write_callback _write;
     bool initialized;
+    char buffer[MAX_BUFFER_SIZE];
 } logger = {
     ._write = NULL,
     .initialized = false
@@ -26,14 +27,14 @@ bool logger_init(logger_write_callback write_callback) {
 
 
 void logger_write(const char *format, ...) {
-    char buffer[MAX_BUFFER_SIZE] = {0};
+    memset(logger.buffer, 0, sizeof(logger.buffer));
 
     va_list args;
     va_start(args, format);
 
     // do not check return value, due to lack of possibility to signalize error
-    (void) vsnprintf(buffer, sizeof(buffer), format, args);
-    logger_write_message(buffer, strlen(buffer));    
+    (void) vsnprintf(logger.buffer, sizeof(logger.buffer), format, args);
+    logger_write_message(logger.buffer, strlen(logger.buffer));
 
     va_end(args);
 }

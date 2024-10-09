@@ -12,6 +12,12 @@
 
 #define LOG_INIT()              logger_init(uart_service_write);
 
+#define LOG(format, ...)\
+    logger_write(format"\r\n", ##__VA_ARGS__)
+
+#define LOG_DEBUG(format, ...)\
+    logger_write("D: "format"\r\n", ##__VA_ARGS__)
+
 #define LOG_INFO(format, ...)\
     logger_write(LOG_COLORF_GREEN"I: "format"\r\n"LOG_COLOR_RESET, ##__VA_ARGS__)
 

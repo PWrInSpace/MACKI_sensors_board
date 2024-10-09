@@ -17,6 +17,13 @@ static DL_SPI_Config spi_amp_config = {
 };
 
 
+/**
+ * @brief Reconfigure frame format of the SPI used to communicate with amplifier
+ * Due to the shitty transmition protocol, we need to read register data on 
+ * first edge, but read data on the second edge
+ * 
+ * @param format 
+ */
 static void _spi_amp_reconfigure(DL_SPI_FRAME_FORMAT format) {
     DL_SPI_disable(SPI_AMP_INST);
     
@@ -27,7 +34,13 @@ static void _spi_amp_reconfigure(DL_SPI_FRAME_FORMAT format) {
     DL_SPI_enable(SPI_AMP_INST);
 }
 
-
+/**
+ * @brief Wait for the amplifier spi release. This just simply wait until the
+ * SPI is no logner busy, or if a wait counter exceeds IS_BUSY_WAIT_COUNTER
+ * 
+ * @return true 
+ * @return false 
+ */
 static bool _wait_for_spi_amp_release(void) {
     uint32_t wait_counter = 0;
     while (DL_SPI_isBusy(SPI_AMP_INST)) {
@@ -41,8 +54,11 @@ static bool _wait_for_spi_amp_release(void) {
     return true;
 }
 
+/**
+ * @brief Flus rx fifo of the spi used to communicate with amplifier
+ * there is two ways to flusht rx fifo: disable->enable SPI or read buffer
+ */
 static void _spi_amp_flush_rx_fifo(void) {
-    // there is two ways to flusht rx fifo: disable->enable SPI or read buffer
     uint8_t buffer;
     while (DL_SPI_receiveDataCheck8(SPI_AMP_INST, &buffer))
         ;
@@ -86,8 +102,17 @@ bool SPI_amp_read_register(uint8_t address, uint8_t *out_val) {
     return true;
 }
 
-
-bool _wait_for_data_rdy_signal(void) {
+/**
+ * @brief Wait for data ready signal. Yes, this shitty protocol uses the POCI line to 
+ * to indicate the readiness of data. So we need to monitor the state of the POCI line to know 
+ * know when data is ready to be read. Of course SPI does not have this feature.
+ * so here we reconfigure the GPIO pin used for POCI to just be a casual input.
+ * This function is also shitty as an amplifier communication protocol, because of the
+ * GPIO pin polling, but it is what it is. Just, if it works, don't touch it.
+ * @return true 
+ * @return false 
+ */
+static bool _wait_for_data_rdy_signal(void) {
     // reconfigure SPI POCI pin to gpio input
     // Amplifier sends a signal on POCI line that data is ready, so we need
     // to observe POCI, here we use polling but it can be also done on inetrrupts
@@ -135,7 +160,7 @@ bool _wait_for_data_rdy_signal(void) {
     return true;
 }
 
-bool SPI_amp_read_data(uint32_t *data) {
+bool SPI_amp_read_data(uint8_t data_buffer[3]) {
     _spi_amp_flush_rx_fifo();
     
     if (spi_amp_config.frameFormat == DL_SPI_FRAME_FORMAT_MOTO3_POL0_PHA0) {
@@ -156,14 +181,11 @@ bool SPI_amp_read_data(uint32_t *data) {
         return false;
     }
 
-    uint8_t read_buffer[3];
     for (int i = 0; i < 3; ++i) {
-        if (DL_SPI_receiveDataCheck8(SPI_AMP_INST, &read_buffer[i]) == false) {
+        if (DL_SPI_receiveDataCheck8(SPI_AMP_INST, &data_buffer[i]) == false) {
             return false;
         }
     }
-
-    *data = (read_buffer[0] << 16) | (read_buffer[1] << 8) | read_buffer[2];
 
     return true;
 }

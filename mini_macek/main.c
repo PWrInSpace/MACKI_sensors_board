@@ -39,15 +39,24 @@
 #include "src/hw_wrappers/gpio.h"
 #include "src/hw_wrappers/spi.h"
 #include "src/app/logger_def.h"
+#include "src/drivers/ISL26102/ISL26102.h"
 #include <inttypes.h>
+#include <stdbool.h>
 
-#define DELAY (4000000)
-
+#define DELAY (64000000)
 
 int main(void) {
     SYSCFG_DL_init();
     GPIO_set_status_led_pin(STATUS_LED_ON);
     LOG_INIT()
+
+    LOG("\r\n\033[0;35m\r\n");
+    LOG("_|      _|    _|_|      _|_|_|  _|    _|  _|_|_|\r\n"
+        "_|_|  _|_|  _|    _|  _|        _|  _|      _|  \r\n"
+        "_|  _|  _|  _|_|_|_|  _|        _|_|        _|  \r\n"
+        "_|      _|  _|    _|  _|        _|  _|      _|  \r\n"
+        "_|      _|  _|    _|    _|_|_|  _|    _|  _|_|_|");
+    LOG("\033[0m\r\n");
 
     ADG726_t mux = {
         ._set_gpio_pin = GPIO_set_mux_pin,
@@ -56,21 +65,34 @@ int main(void) {
         .wr_pin = GPIO_MUX_nWR_PIN
     };
 
+    ISL26102_t amp = {
+        .read_data = SPI_amp_read_data,
+        .read_reg = SPI_amp_read_register,
+        .write_reg = SPI_amp_set_register
+    };
+
     ADG726_init(&mux);
+    if (ISL26102_init(&amp) == true) {
+        LOG_INFO("Amplifier initialized :D");
+    } else {
+        LOG_ERROR("Unable to initalize amplifier :CCC");
+    }
+
     uint32_t data1 = 0;
     uint32_t data2 = 0;
     ADG726_change_address(&mux, 1);
-    SPI_amp_set_register(0x85, 0x07);
+    ISL26102_set_output_word_rate(&amp, ISL26102_DR_320);
+    ISL26102_change_channel(&amp, ISL26102_CHANNEL_2);
     while (1) {
         ADG726_change_address(&mux, 1);
-        SPI_amp_set_register(0x84, 0x01);
-        SPI_amp_read_data(&data1);
+        ISL26102_set_convertion_controll(&amp, ISL26102_SINGLE_CONVERSION);
+        ISL26102_read_data(&amp, &data1);
 
         ADG726_change_address(&mux, 2);
-        SPI_amp_set_register(0x84, 0x01);
-        SPI_amp_read_data(&data2);
+        ISL26102_set_convertion_controll(&amp, ISL26102_SINGLE_CONVERSION);
+        ISL26102_read_data(&amp, &data2);
 
-        LOG_INFO("Amplifier value\tCH1: %"PRIu32"\tCH2: %"PRIu32 , data1, data2);
+        LOG_DEBUG("Amplifier value\tCH1: %"PRIu32"\tCH2: %"PRIu32 , data1, data2);
         delay_cycles(DELAY);
     }
 }

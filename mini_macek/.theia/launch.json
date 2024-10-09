@@ -68,6 +68,33 @@
                 "name": "mini_macek",
                 "resourceId": "/mini_macek/src/hw_wrappers"
             }
+        },
+        {
+            "name": "mini_macek (7)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "mini_macek",
+                "resourceId": "/mini_macek/src/hw_wrappers/gpio.h"
+            }
+        },
+        {
+            "name": "mini_macek (8)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "mini_macek",
+                "resourceId": "/mini_macek/src/hw_wrappers/spi.c"
+            }
+        },
+        {
+            "name": "mini_macek (9)",
+            "type": "ccs-debug",
+            "request": "launch",
+            "projectInfo": {
+                "name": "mini_macek",
+                "resourceId": "/mini_macek/src/drivers/ISL26102/ISL26102.h"
+            }
         }
     ]
 }
