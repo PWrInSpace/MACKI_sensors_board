@@ -1,8 +1,8 @@
 Debug/
 .theia/
 .settings/
-Debug/.clangd/
-targetConfigs/
+Debug
+mini_macek/targetConfigs/
 
 # Prerequisites
 *.d
