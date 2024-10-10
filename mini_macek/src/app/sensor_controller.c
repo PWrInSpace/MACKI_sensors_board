@@ -84,7 +84,7 @@ bool sens_ctrl_init(void) {
 }
 
 bool sens_ctrl_move_to_next_address(void) {
-    ctx.current_sensor = (ctx.current_sensor + 1) % MAX_SENSORS_NUMBER;
+    ctx.current_sensor = (ctx.current_sensor + 1) % SENSORS_NUMBER;
 
     uint8_t multiplexer_input_pin = ctx.current_sensor % MUX_MAX_ADDRESSES;
     if (ADG726_change_address(&ctx.mux, multiplexer_input_pin) == false) {
