@@ -40,10 +40,13 @@
 #include "src/hw_wrappers/spi.h"
 #include "src/app/logger_def.h"
 #include "src/drivers/ISL26102/ISL26102.h"
+#include "src/app/sensors_controller.h"
 #include <inttypes.h>
 #include <stdbool.h>
 
-#define DELAY (64000000)
+#define DELAY (16000000)
+
+#define MODULE "main"
 
 int main(void) {
     SYSCFG_DL_init();
@@ -58,41 +61,24 @@ int main(void) {
         "_|      _|  _|    _|    _|_|_|  _|    _|  _|_|_|");
     LOG("\033[0m\r\n");
 
-    ADG726_t mux = {
-        ._set_gpio_pin = GPIO_set_mux_pin,
-        .address_pins = {GPIO_MUX_A0_PIN, GPIO_MUX_A1_PIN, GPIO_MUX_A2_PIN, GPIO_MUX_A3_PIN},
-        .cs_pin = GPIO_MUX_nCS_PIN,
-        .wr_pin = GPIO_MUX_nWR_PIN
-    };
 
-    ISL26102_t amp = {
-        .read_data = SPI_amp_read_data,
-        .read_reg = SPI_amp_read_register,
-        .write_reg = SPI_amp_set_register
-    };
+    sens_ctrl_init();
 
-    ADG726_init(&mux);
-    if (ISL26102_init(&amp) == true) {
-        LOG_INFO("Amplifier initialized :D");
-    } else {
-        LOG_ERROR("Unable to initalize amplifier :CCC");
-    }
-
+    uint8_t buffer[TOTAL_BYTES] = {0};
     uint32_t data1 = 0;
     uint32_t data2 = 0;
-    ADG726_change_address(&mux, 1);
-    ISL26102_set_output_word_rate(&amp, ISL26102_DR_320);
-    ISL26102_change_channel(&amp, ISL26102_CHANNEL_2);
     while (1) {
-        ADG726_change_address(&mux, 1);
-        ISL26102_set_convertion_controll(&amp, ISL26102_SINGLE_CONVERSION);
-        ISL26102_read_data(&amp, &data1);
+        sens_ctrl_move_to_next_address();
+        sens_ctrl_read_addr_data();
 
-        ADG726_change_address(&mux, 2);
-        ISL26102_set_convertion_controll(&amp, ISL26102_SINGLE_CONVERSION);
-        ISL26102_read_data(&amp, &data2);
+        sens_ctrl_move_to_next_address();
+        sens_ctrl_read_addr_data();
 
-        LOG_DEBUG("Amplifier value\tCH1: %"PRIu32"\tCH2: %"PRIu32 , data1, data2);
+        sens_ctrl_get_packed_data(buffer, sizeof(buffer));
+
+        data1 = (buffer[0] << 16) | (buffer[1] << 8) | buffer[2];
+        data2 = (buffer[3] << 16) | (buffer[4] << 8) | buffer[5];
+        LOG_DEBUG(MODULE, "Amplifier value\tCH1: %"PRIu32"\tCH2: %"PRIu32 , data1, data2);
         delay_cycles(DELAY);
     }
 }

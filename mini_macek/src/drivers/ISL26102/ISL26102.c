@@ -33,16 +33,23 @@ bool ISL26102_write_reg(ISL26102_t *dev, uint8_t reg, uint8_t val) {
     return dev->write_reg(W_REG(reg), val);
 }
 
-bool ISL26102_read_data(ISL26102_t *dev, uint32_t *out_data) {
+bool ISL26102_read_raw_data(ISL26102_t *dev, uint8_t data_buffer[3]) {
     if (dev == NULL) {
         return false;
     }
 
-    uint8_t data_buffer[3] = {0};
     if (dev->read_data(data_buffer) == false) {
         return false;
     }
 
+    return true;
+}
+
+bool ISL26102_read_data(ISL26102_t *dev, uint32_t *out_data) {
+    uint8_t data_buffer[3] = {0};
+    if (ISL26102_read_raw_data(dev, data_buffer) == false) {
+        return false;
+    }
     // data is store on 24 bits, where idx -> MSB
     *out_data = data_buffer[0] << 16 | data_buffer[1] << 8 | data_buffer[2];
 

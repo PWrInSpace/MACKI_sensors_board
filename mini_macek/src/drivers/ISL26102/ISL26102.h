@@ -143,6 +143,9 @@ bool ISL26102_read_reg(ISL26102_t *dev, uint8_t reg, uint8_t *out_val);
  */
 bool ISL26102_write_reg(ISL26102_t *dev, uint8_t reg, uint8_t val);
 
+
+bool ISL26102_read_raw_data(ISL26102_t *dev, uint8_t data_buffer[3]);
+
 /**
  * @brief Read data from ISL26102. The data is stored on 24 bits of the 32 bit out data.
  *
