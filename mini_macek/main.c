@@ -30,19 +30,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "ti/driverlib/dl_comp.h"
-#include "ti/driverlib/dl_gpio.h"
-#include "ti/driverlib/dl_uart_extend.h"
-#include "ti/driverlib/m0p/dl_core.h"
 #include "ti_msp_dl_config.h"
-#include "src/drivers/ADG726/ADG726.h"
-#include "src/hw_wrappers/gpio.h"
-#include "src/hw_wrappers/spi.h"
 #include "src/app/logger_def.h"
-#include "src/drivers/ISL26102/ISL26102.h"
 #include "src/app/sensors_controller.h"
-#include <inttypes.h>
-#include <stdbool.h>
+#include "src/hw_wrappers/uart.h"
 
 #define DELAY (16000000)
 
@@ -62,23 +53,40 @@ int main(void) {
     LOG("\033[0m\r\n");
 
 
-    sens_ctrl_init();
+    // sens_ctrl_init();
 
+    // uint32_t data1 = 0;
+    // uint32_t data2 = 0;
     uint8_t buffer[TOTAL_BYTES] = {0};
-    uint32_t data1 = 0;
-    uint32_t data2 = 0;
+    uint8_t first_val = 0;
     while (1) {
-        sens_ctrl_move_to_next_address();
-        sens_ctrl_read_addr_data();
+        // sens_ctrl_move_to_next_address();
+        // sens_ctrl_read_addr_data();
 
-        sens_ctrl_move_to_next_address();
-        sens_ctrl_read_addr_data();
+        // sens_ctrl_move_to_next_address();
+        // sens_ctrl_read_addr_data();
 
-        sens_ctrl_get_packed_data(buffer, sizeof(buffer));
+        // sens_ctrl_get_packed_data(buffer, sizeof(buffer));
 
-        data1 = (buffer[0] << 16) | (buffer[1] << 8) | buffer[2];
-        data2 = (buffer[3] << 16) | (buffer[4] << 8) | buffer[5];
-        LOG_DEBUG(MODULE, "Amplifier value\tCH1: %"PRIu32"\tCH2: %"PRIu32 , data1, data2);
+        // data1 = (buffer[0] << 16) | (buffer[1] << 8) | buffer[2];
+        // data2 = (buffer[3] << 16) | (buffer[4] << 8) | buffer[5];
+        // LOG_DEBUG(MODULE, "Amplifier value\tCH1: %"PRIu32"\tCH2: %"PRIu32 , data1, data2);
+
+        for (uint8_t i = 0; i < TOTAL_BYTES; i+=3) {
+            buffer[i + 2] = first_val + (i / 3);
+        }
+        first_val = (first_val + 1) % 10;
+
+        uart_com_write(buffer, sizeof(buffer));
+
+        LOG_INFO(MODULE,
+            "Transmiting: 0x%02X, 0x%02X, ... 0x%02X, 0x%02X",
+            (buffer[0] << 16) | (buffer[1] << 8) | buffer[2],
+            (buffer[3] << 16) | (buffer[4] << 8) | buffer[5],
+            (buffer[90] << 16) | (buffer[91] << 8) | buffer[92],
+            (buffer[93] << 16) | (buffer[94] << 8) | buffer[95]
+        );
+        
         delay_cycles(DELAY);
     }
 }

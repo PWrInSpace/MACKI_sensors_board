@@ -27,4 +27,7 @@
 // Logger configuration
 #define LOGGER_WRITE_UART    uart_service_write
 
+// Communication uart
+#define COM_WRITE_UART     uart_com_write
+
 #endif

@@ -14,3 +14,13 @@ void uart_service_write(const char *message, size_t len) {
     }
 }
 
+
+void uart_com_write(uint8_t *data, size_t len) {
+    if (data == NULL) {
+        return;
+    }
+
+    for (size_t i = 0; i < len; ++i) {
+        DL_UART_Extend_transmitDataBlocking(UART_COM_INST, data[i]);
+    }
+}

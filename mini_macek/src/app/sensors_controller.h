@@ -7,7 +7,7 @@
 #include "src/app/sensors_controller.h"
 #include "src/drivers/ISL26102/ISL26102.h"
 
-#define SENSORS_NUMBER 2
+#define SENSORS_NUMBER 32
 #define BYTES_PER_VALUE 3
 #define TOTAL_BYTES BYTES_PER_VALUE * SENSORS_NUMBER
 // Max number of sensor is 32
