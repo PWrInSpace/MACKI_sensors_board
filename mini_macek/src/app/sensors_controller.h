@@ -11,7 +11,7 @@
 #define BYTES_PER_VALUE 3
 #define TOTAL_BYTES BYTES_PER_VALUE * SENSORS_NUMBER
 // Max number of sensor is 32
-#define DEFAULT_OWR ISL26102_DR_640
+#define DEFAULT_OWR ISL26102_DR_4000
 
 bool sens_ctrl_init(void);
 bool sens_ctrl_move_to_next_address(void);

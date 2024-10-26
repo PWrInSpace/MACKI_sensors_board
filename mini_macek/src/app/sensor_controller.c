@@ -56,6 +56,13 @@ static bool _configure_default(void) {
         return false;
     }
 
+    uint8_t data = 0;
+    if (ISL26102_read_reg(&ctx.amp, 0x42, &data) == true) {
+        LOG_INFO(MODULE, "Delay timer %d", (int) data);
+    } else {
+        LOG_ERROR(MODULE, ":C");
+    }
+
     return true;
 }
 
@@ -78,6 +85,11 @@ bool sens_ctrl_init(void) {
     if (_configure_default() == false) {
         return false;
     }
+
+    // if (ISL26102_set_convertion_controll(&ctx.amp, ISL26102_CONTINUOUS_CONVERSION) == false) {
+    //     LOG_ERROR(MODULE, "Unable to set convertion controll");
+    //     return false;
+    // }
 
     LOG_INFO(MODULE, "Sensor control initialized");
     return true;

@@ -54,8 +54,8 @@ GPIO3.associatedPins[0].$name       = "CS";
 GPIO3.associatedPins[0].pin.$assign = "PA3";
 
 SPI1.$name                              = "SPI_AMP";
-SPI1.targetBitRate                      = 100000;
 SPI1.frameFormat                        = "MOTO3";
+SPI1.targetBitRate                      = 16000000;
 SPI1.peripheral.sclkPin.$assign         = "PA6";
 SPI1.peripheral.mosiPin.$assign         = "PA5";
 SPI1.peripheral.misoPin.$assign         = "PA4";
@@ -91,15 +91,15 @@ UART2.$name                            = "UART_COM";
 UART2.targetBaudRate                   = 115200;
 UART2.peripheral.rxPin.$assign         = "PA11";
 UART2.peripheral.txPin.$assign         = "PA10";
-UART2.txPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric5";
 UART2.txPinConfig.direction            = scripting.forceWrite("OUTPUT");
 UART2.txPinConfig.hideOutputInversion  = scripting.forceWrite(false);
 UART2.txPinConfig.onlyInternalResistor = scripting.forceWrite(false);
 UART2.txPinConfig.passedPeripheralType = scripting.forceWrite("Digital");
-UART2.rxPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric6";
+UART2.txPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric5";
 UART2.rxPinConfig.hideOutputInversion  = scripting.forceWrite(false);
 UART2.rxPinConfig.onlyInternalResistor = scripting.forceWrite(false);
 UART2.rxPinConfig.passedPeripheralType = scripting.forceWrite("Digital");
+UART2.rxPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric6";
 
 ProjectConfig.deviceSpin = "MSPM0L1306";
 

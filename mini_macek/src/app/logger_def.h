@@ -20,7 +20,7 @@
 #define LOG_INIT()              logger_init(LOGGER_WRITE_UART);
 
 #define LOG(format, ...)\
-    logger_write(format"\r\n", ##__VA_ARGS__)
+    logger_write(format, ##__VA_ARGS__)
 
 #define LOG_DEBUG(module, format, ...)\
     LOG_BASIC(LOG_COLORF_WHITE, LOG_LEVEL_STR_DEBUG, module, format, ##__VA_ARGS__)
