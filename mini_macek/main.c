@@ -31,10 +31,12 @@
  */
 
 #include "src/drivers/ISL26102/ISL26102.h"
+#include "ti/driverlib/m0p/dl_core.h"
 #include "ti_msp_dl_config.h"
 #include "src/app/logger_def.h"
 #include "src/app/sensors_controller.h"
 #include "src/hw_wrappers/uart.h"
+#include <string.h>
 #include <inttypes.h>
 
 #define MODULE "main"
@@ -45,32 +47,58 @@ static uint8_t message_prefix[PREFIX_SIZE] = {0x01, 0x02, 0x03, 0x04};
 void print_welcome_message();
 void dump_sensor_info(uint8_t *buffer);
 
+void test_message();
+
 int main(void) {
     SYSCFG_DL_init();
     GPIO_set_status_led_pin(STATUS_LED_ON);
     LOG_INIT();
-    sens_ctrl_init();
+    // sens_ctrl_init();
 
     print_welcome_message();
 
     uint8_t buffer[PREFIX_SIZE + TOTAL_BYTES] = {0};
     while (1) {
-        for (uint8_t i = 0; i < 32; ++i) {
-            sens_ctrl_move_to_next_address();
-            sens_ctrl_read_addr_data();
-        }
+        // for (uint8_t i = 0; i < 32; ++i) {
+        //     sens_ctrl_move_to_next_address();
+        //     sens_ctrl_read_addr_data();
+        // }
 
-        // copy prefix
-        memcpy(buffer, message_prefix, PREFIX_SIZE);
+        // // copy prefix
+        // memcpy(buffer, message_prefix, PREFIX_SIZE);
 
-        // copy data to the remining bytes of buffer
-        sens_ctrl_get_packed_data(buffer + PREFIX_SIZE, sizeof(buffer));
+        // // copy data to the remining bytes of buffer
+        // sens_ctrl_get_packed_data(buffer + PREFIX_SIZE, sizeof(buffer));
 
-        // write message
-        uart_com_write(buffer, sizeof(buffer));
+        // // write message
+        // uart_com_write(buffer, sizeof(buffer));
 
-        dump_sensor_info(buffer + PREFIX_SIZE);
+        // dump_sensor_info(buffer + PREFIX_SIZE);
+
+        test_message();
+        delay_cycles(8000000);
     }
+}
+
+static uint8_t first_val = 0;
+void test_message() {
+    uint8_t buffer[PREFIX_SIZE + TOTAL_BYTES] = {0};
+    memcpy(buffer, message_prefix, PREFIX_SIZE);
+
+    for (uint8_t i = 0; i < TOTAL_BYTES; i+=3) {
+        buffer[i + 2 + 4] = first_val + (i / 3);
+    }
+
+    first_val = (first_val + 1) % 10;
+    uart_com_write(buffer, sizeof(buffer));
+    
+    LOG_INFO(MODULE,
+        "Transmiting: 0x%02X, 0x%02X, ... 0x%02X, 0x%02X",
+        (buffer[0] << 16) | (buffer[1] << 8) | buffer[2],
+        (buffer[3] << 16) | (buffer[4] << 8) | buffer[5],
+        (buffer[90] << 16) | (buffer[91] << 8) | buffer[92],
+        (buffer[93] << 16) | (buffer[94] << 8) | buffer[95]
+    );    
 }
 
 
