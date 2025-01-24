@@ -32,6 +32,7 @@
 
 #include "src/drivers/ISL26102/ISL26102.h"
 #include "ti/driverlib/m0p/dl_core.h"
+#include "ti/driverlib/m0p/sysctl/dl_sysctl_mspm0l11xx_l13xx.h"
 #include "ti_msp_dl_config.h"
 #include "src/app/logger_def.h"
 #include "src/app/sensors_controller.h"
@@ -45,62 +46,46 @@
 static uint8_t message_prefix[PREFIX_SIZE] = {0x01, 0x02, 0x03, 0x04};
 
 void print_welcome_message();
-void dump_sensor_info(uint8_t *buffer);
-
-void test_message();
+void dump_sensors_info(uint8_t *buffer);
 
 int main(void) {
     SYSCFG_DL_init();
-    GPIO_set_status_led_pin(STATUS_LED_ON);
     LOG_INIT();
-    // sens_ctrl_init();
+    delay_cycles(3200000);
+    if (sens_ctrl_init() == false) {
+       DL_SYSCTL_RESET_CPU;
+    }
+
+    GPIO_set_status_led_pin(STATUS_LED_ON);
 
     print_welcome_message();
 
     uint8_t buffer[PREFIX_SIZE + TOTAL_BYTES] = {0};
     while (1) {
-        // for (uint8_t i = 0; i < 32; ++i) {
-        //     sens_ctrl_move_to_next_address();
-        //     sens_ctrl_read_addr_data();
-        // }
+        for (uint8_t i = 0; i < 32; ++i) {
+            if (sens_ctrl_move_to_next_address() == false) {
+                DL_SYSCTL_RESET_CPU;
+            }
 
-        // // copy prefix
-        // memcpy(buffer, message_prefix, PREFIX_SIZE);
+            if (sens_ctrl_read_addr_data() == false) {
+                DL_SYSCTL_RESET_CPU;
+            }
+        }
 
-        // // copy data to the remining bytes of buffer
-        // sens_ctrl_get_packed_data(buffer + PREFIX_SIZE, sizeof(buffer));
+        // copy prefix
+        memcpy(buffer, message_prefix, PREFIX_SIZE);
 
-        // // write message
-        // uart_com_write(buffer, sizeof(buffer));
+        // copy data to the remining bytes of buffer
+        sens_ctrl_get_packed_data(buffer + PREFIX_SIZE, TOTAL_BYTES);
 
-        // dump_sensor_info(buffer + PREFIX_SIZE);
+        // write message
+        uart_com_write(buffer, sizeof(buffer));
 
-        test_message();
+        dump_sensors_info(buffer + PREFIX_SIZE);
+
         delay_cycles(8000000);
     }
 }
-
-static uint8_t first_val = 0;
-void test_message() {
-    uint8_t buffer[PREFIX_SIZE + TOTAL_BYTES] = {0};
-    memcpy(buffer, message_prefix, PREFIX_SIZE);
-
-    for (uint8_t i = 0; i < TOTAL_BYTES; i+=3) {
-        buffer[i + 2 + 4] = first_val + (i / 3);
-    }
-
-    first_val = (first_val + 1) % 10;
-    uart_com_write(buffer, sizeof(buffer));
-    
-    LOG_INFO(MODULE,
-        "Transmiting: 0x%02X, 0x%02X, ... 0x%02X, 0x%02X",
-        (buffer[0] << 16) | (buffer[1] << 8) | buffer[2],
-        (buffer[3] << 16) | (buffer[4] << 8) | buffer[5],
-        (buffer[90] << 16) | (buffer[91] << 8) | buffer[92],
-        (buffer[93] << 16) | (buffer[94] << 8) | buffer[95]
-    );    
-}
-
 
 void print_welcome_message(void) {
     LOG("\r\n\033[0;35m\r\n");
@@ -115,7 +100,7 @@ void print_welcome_message(void) {
 
 static uint8_t detected_sensors[32] = {0};
 
-void dump_sensor_info(uint8_t *buffer) {
+void dump_sensors_info(uint8_t *buffer) {
     uint32_t data;
 
     LOG("\033[2J");
