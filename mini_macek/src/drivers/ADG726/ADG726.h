@@ -9,8 +9,8 @@
 
 #define INIT_INPUT_PIN_EMABLE 0
 
-#define MIN_INPUT_PIN 1
-#define MAX_INPUT_PIN 16
+#define MIN_INPUT_PIN 0
+#define MAX_INPUT_PIN 15
 
 /**
  * @brief Type definition for the GPIO pin
@@ -38,7 +38,7 @@ typedef void (*ADG726_set_gpio_pin)(ADG726_gpio_pin_t, ADG726_gpio_state_t);
  *
  */
 typedef struct {
-    ADG726_set_gpio_pin _set_gpio_pin;
+    ADG726_set_gpio_pin set_gpio_pin;
     ADG726_gpio_pin_t address_pins[NB_ADDRESS_PINS];
     ADG726_gpio_pin_t wr_pin;
     ADG726_gpio_pin_t cs_pin;  // currently only differential output is implemented

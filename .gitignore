@@ -1,4 +1,8 @@
 Debug/
+.theia/
+.settings/
+Debug
+mini_macek/targetConfigs/
 
 # Prerequisites
 *.d
